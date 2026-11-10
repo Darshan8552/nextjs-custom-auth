@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import { ChangePasswordForm } from "@/components/auth/change-password-form";
+import { ChangePasswordForm } from "@/components/auth/change-password-form";
 import {
   Card,
   CardContent,
@@ -32,7 +32,7 @@ async function SettingsContent() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* <ChangePasswordForm /> */}
+        <ChangePasswordForm />
       </CardContent>
     </Card>
   );
