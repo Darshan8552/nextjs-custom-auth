@@ -8,43 +8,52 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
+  id            String    @id @default(cuid())
+  email         String    @unique
   passwordHash  String
-  emailVerified Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  sessions           Session[]
-  verificationTokens VerificationToken[]
+  sessions Session[]
+  tokens   VerificationToken[]
 }
 
 model Session {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   tokenHash String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
+  @@index([expiresAt])
 }
 
-enum VerificationType {
+enum TokenType {
   EMAIL_OTP
   PASSWORD_RESET
 }
 
 model VerificationToken {
-  id        String           @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   tokenHash String
-  type      VerificationType
+  type      TokenType
   expiresAt DateTime
-  attempts  Int              @default(0)
-  createdAt DateTime         @default(now())
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
 
-  @@unique([userId, type])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, createdAt])
   @@index([tokenHash])
+}
+
+model RateLimit {
+  key         String   @id
+  count       Int
+  windowStart DateTime
 }
