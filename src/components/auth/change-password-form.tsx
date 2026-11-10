@@ -1,8 +1,8 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { changePassword } from "@/actions/auth/change-password";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,11 @@ import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  changePasswordSchema,
   type ChangePasswordInput,
+  changePasswordSchema,
 } from "@/lib/validations/auth";
 import { callAction, showFailure } from "./form-utils";
+import { PasswordChecklist } from "./password-checklist";
 import { useRequireAuth } from "./session-provider";
 
 export function ChangePasswordForm() {
@@ -24,6 +25,7 @@ export function ChangePasswordForm() {
     handleSubmit,
     setError,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ChangePasswordInput>({
     resolver: zodResolver(changePasswordSchema),
@@ -33,6 +35,9 @@ export function ChangePasswordForm() {
       confirmPassword: "",
     },
   });
+
+  const newPassword = watch("newPassword");
+  const confirmPassword = watch("confirmPassword");
 
   async function onSubmit(values: ChangePasswordInput) {
     const result = await callAction(() => changePassword(values));
@@ -49,9 +54,11 @@ export function ChangePasswordForm() {
   if (!user) return null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <div className="space-y-2">
-        <Label htmlFor="currentPassword">Current password</Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+      <div className="space-y-1.5">
+        <Label htmlFor="currentPassword" className="text-[13px]">
+          Current password
+        </Label>
         <Input
           id="currentPassword"
           type="password"
@@ -61,8 +68,10 @@ export function ChangePasswordForm() {
         />
         <FieldError message={errors.currentPassword?.message} />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="newPassword">New password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="newPassword" className="text-[13px]">
+          New password
+        </Label>
         <Input
           id="newPassword"
           type="password"
@@ -70,10 +79,13 @@ export function ChangePasswordForm() {
           aria-invalid={!!errors.newPassword}
           {...register("newPassword")}
         />
+        <PasswordChecklist password={newPassword} confirm={confirmPassword} />
         <FieldError message={errors.newPassword?.message} />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm new password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="confirmPassword" className="text-[13px]">
+          Confirm new password
+        </Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -83,7 +95,12 @@ export function ChangePasswordForm() {
         />
         <FieldError message={errors.confirmPassword?.message} />
       </div>
-      <Button type="submit" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full sm:w-auto sm:min-w-44"
+        disabled={isSubmitting}
+      >
         Change password
       </Button>
     </form>

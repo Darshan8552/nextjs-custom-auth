@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { resetPassword } from "@/actions/auth/reset-password";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,11 @@ import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  resetPasswordSchema,
   type ResetPasswordInput,
+  resetPasswordSchema,
 } from "@/lib/validations/auth";
 import { callAction, showFailure } from "./form-utils";
+import { PasswordChecklist } from "./password-checklist";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
@@ -24,11 +25,15 @@ export function ResetPasswordForm({ token }: { token: string }) {
     register,
     handleSubmit,
     setError,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { token, password: "", confirmPassword: "" },
   });
+
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
 
   async function onSubmit(values: ResetPasswordInput) {
     const result = await callAction(() => resetPassword(values));
@@ -44,13 +49,18 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   if (linkInvalid) {
     return (
-      <div className="space-y-3 text-sm">
-        <p className="text-muted-foreground">
-          This reset link is invalid or has expired.
+      <div className="space-y-4">
+        <p
+          role="alert"
+          className="border-l-2 border-signal bg-signal/[0.06] px-3 py-2.5 text-[13px] leading-5"
+        >
+          This reset link is invalid or has expired. Request a new link to
+          continue.
         </p>
         <Button
           render={<Link href="/forgot-password" />}
           nativeButton={false}
+          size="lg"
           className="w-full"
         >
           Request a new link
@@ -60,10 +70,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <input type="hidden" {...register("token")} />
-      <div className="space-y-2">
-        <Label htmlFor="password">New password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="text-[13px]">
+          New password
+        </Label>
         <Input
           id="password"
           type="password"
@@ -71,10 +83,13 @@ export function ResetPasswordForm({ token }: { token: string }) {
           aria-invalid={!!errors.password}
           {...register("password")}
         />
+        <PasswordChecklist password={password} confirm={confirmPassword} />
         <FieldError message={errors.password?.message} />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm new password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="confirmPassword" className="text-[13px]">
+          Confirm new password
+        </Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -84,7 +99,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
         />
         <FieldError message={errors.confirmPassword?.message} />
       </div>
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full"
+        disabled={isSubmitting}
+      >
         Reset password
       </Button>
     </form>

@@ -1,15 +1,11 @@
-import { SignupForm } from "@/components/auth/signup-form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { redirectIfAuthenticated } from "@/lib/auth/guards";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { AuthCard } from "@/components/auth/auth-card";
+import { SignupForm } from "@/components/auth/signup-form";
+import { redirectIfAuthenticated } from "@/lib/auth/guards";
+
+export const metadata: Metadata = { title: "Sign up" };
 
 export default function SignupPage() {
   return (
@@ -17,26 +13,24 @@ export default function SignupPage() {
       <Suspense fallback={null}>
         <AuthRedirect />
       </Suspense>
-      <Card>
-        <CardHeader>
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>
-            We&apos;ll email you a 6-digit code to verify it
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SignupForm />
-        </CardContent>
-        <CardFooter className="justify-center text-sm text-muted-foreground">
-          Already have an account?&nbsp;
-          <Link
-            href="login"
-            className="text-foreground underline-offset-4 hover:underline"
-          >
-            Log in
-          </Link>
-        </CardFooter>
-      </Card>
+      <AuthCard
+        kind="issue"
+        title="Create your account"
+        description="We'll email you a 6-digit code to verify it."
+        footer={
+          <>
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
+            >
+              Log in
+            </Link>
+          </>
+        }
+      >
+        <SignupForm />
+      </AuthCard>
     </>
   );
 }

@@ -1,9 +1,11 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { LandingPage } from "@/components/marketing/landing-page";
 
-// This route only redirects, so there is no UI to validate for instant
-// navigation. Without this, validation trips over the NEXT_REDIRECT error.
-export const instant = false;
+export const metadata: Metadata = {
+  description:
+    "A custom authentication system with email verification, one-time codes, password recovery, and server-side sessions.",
+};
 
 export default function Home() {
-  redirect("/dashboard");
+  return <LandingPage />;
 }

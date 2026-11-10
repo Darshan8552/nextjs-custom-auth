@@ -1,16 +1,16 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { forgotPassword } from "@/actions/auth/forgot-password";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  forgotPasswordSchema,
   type ForgotPasswordInput,
+  forgotPasswordSchema,
 } from "@/lib/validations/auth";
 import { callAction, showFailure } from "./form-utils";
 
@@ -38,16 +38,23 @@ export function ForgotPasswordForm() {
 
   if (message) {
     return (
-      <p role="status" className="text-sm text-muted-foreground">
-        {message}. The link is valid for 1 hour.
-      </p>
+      <output className="block border border-border bg-background p-4">
+        <p className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+          Reset link sent
+        </p>
+        <p className="mt-2 text-[13px] leading-5">
+          {message}. The link is valid for 1 hour.
+        </p>
+      </output>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-[13px]">
+          Email
+        </Label>
         <Input
           id="email"
           type="email"
@@ -57,7 +64,12 @@ export function ForgotPasswordForm() {
         />
         <FieldError message={errors.email?.message} />
       </div>
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full"
+        disabled={isSubmitting}
+      >
         Send reset link
       </Button>
     </form>

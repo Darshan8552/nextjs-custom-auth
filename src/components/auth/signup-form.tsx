@@ -1,15 +1,16 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { useForm } from "react-hook-form";
-import { SignUpInput, signUpSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldError } from "../ui/field-error";
-import { callAction, showFailure } from "./form-utils";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { signUp } from "@/actions/auth/sign-up";
+import { type SignUpInput, signUpSchema } from "@/lib/validations/auth";
+import { Button } from "../ui/button";
+import { FieldError } from "../ui/field-error";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { callAction, showFailure } from "./form-utils";
+import { PasswordChecklist } from "./password-checklist";
 
 export function SignupForm() {
   const router = useRouter();
@@ -18,11 +19,14 @@ export function SignupForm() {
     register,
     handleSubmit,
     setError,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { email: "", password: "" },
   });
+
+  const password = watch("password");
 
   async function onSubmit(values: SignUpInput) {
     const result = await callAction(() => signUp(values));
@@ -37,9 +41,11 @@ export function SignupForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+    <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-[13px]">
+          Email
+        </Label>
         <Input
           id="email"
           type="email"
@@ -49,8 +55,10 @@ export function SignupForm() {
         />
         <FieldError message={errors.email?.message} />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="text-[13px]">
+          Password
+        </Label>
         <Input
           id="password"
           type="password"
@@ -58,10 +66,15 @@ export function SignupForm() {
           aria-invalid={!!errors.password}
           {...register("password")}
         />
-        <p className="text-xs text-muted-foreground">At least 8 characters.</p>
+        <PasswordChecklist password={password} />
         <FieldError message={errors.password?.message} />
       </div>
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full"
+        disabled={isSubmitting}
+      >
         Create account
       </Button>
     </form>

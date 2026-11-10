@@ -1,17 +1,17 @@
 "use client";
 
-import { LoginInput, loginSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { FieldError } from "../ui/field-error";
-import { callAction, showFailure } from "./form-utils";
-import { login } from "@/actions/auth/login";
 import { toast } from "sonner";
+import { login } from "@/actions/auth/login";
+import { type LoginInput, loginSchema } from "@/lib/validations/auth";
 import { Button } from "../ui/button";
-import Link from "next/link";
+import { FieldError } from "../ui/field-error";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { callAction, showFailure } from "./form-utils";
 
 export function LoginForm() {
   const router = useRouter();
@@ -42,9 +42,11 @@ export function LoginForm() {
     router.refresh();
   }
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-[13px]">
+          Email
+        </Label>
         <Input
           id="email"
           type="email"
@@ -54,12 +56,14 @@ export function LoginForm() {
         />
         <FieldError message={errors.email?.message} />
       </div>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="password" className="text-[13px]">
+            Password
+          </Label>
           <Link
             href="/forgot-password"
-            className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+            className="text-[12px] text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground"
           >
             Forgot password?
           </Link>
@@ -73,7 +77,12 @@ export function LoginForm() {
         />
         <FieldError message={errors.password?.message} />
       </div>
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full"
+        disabled={isSubmitting}
+      >
         Log in
       </Button>
     </form>

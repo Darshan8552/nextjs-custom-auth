@@ -1,25 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AuthCard } from "@/components/auth/auth-card";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "Forgot password" };
 
 export default function ForgotPasswordPage() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Forgot your password?</CardTitle>
-        <CardDescription>Enter your email and we&apos;ll send you a reset link</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ForgotPasswordForm />
-      </CardContent>
-      <CardFooter className="justify-center text-sm text-muted-foreground">
-        <Link href="/login" className="text-foreground underline-offset-4 hover:underline">
-          Back to log in
-        </Link>
-      </CardFooter>
-    </Card>
+    <AuthCard
+      kind="recovery"
+      title="Forgot your password?"
+      description="Enter your email and we'll send you a reset link."
+      footer={
+        <>
+          Remembered it?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
+          >
+            Back to log in
+          </Link>
+        </>
+      }
+    >
+      <ForgotPasswordForm />
+    </AuthCard>
   );
 }

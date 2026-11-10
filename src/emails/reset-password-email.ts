@@ -1,13 +1,25 @@
 import type { EmailContent } from "@/lib/email";
-import { emailLayout } from "./layout";
+import {
+  emailButton,
+  emailLayout,
+  emailMicroLabel,
+  emailParagraph,
+  FONT_MONO,
+} from "./layout";
 
 export function resetPasswordEmail(resetUrl: string): EmailContent {
-  const html = emailLayout(
-    "Reset your password",
-    `<p style="margin:0 0 16px;font-size:14px;line-height:1.5;">We received a request to reset your password. This link works once and expires in 1 hour.</p>
-     <a href="${resetUrl}" style="display:inline-block;background:#18181b;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:14px;">Reset password</a>
-     <p style="margin:16px 0 0;font-size:12px;color:#52525b;word-break:break-all;">Or paste this link in your browser:<br/>${resetUrl}</p>`,
-  );
-  const text = `Reset your password using this link (valid for 1 hour, single use): ${resetUrl}`;
-  return { subject: "Reset your password", html, text };
+  const html = emailLayout({
+    label: "Recovery",
+    title: "Reset your password",
+    preheader:
+      "A password reset was requested for your Sallyport account. The link expires in 1 hour.",
+    bodyHtml: `${emailParagraph('We received a request to reset the password for your Sallyport access pass. This link works once and expires in <strong style="color:#141416;">1 hour</strong>.')}
+      ${emailButton(resetUrl, "Reset password")}
+      ${emailMicroLabel("Recovery link")}
+      <p style="margin:0;padding:12px 14px;background-color:#f2f2ef;border:1px solid #d6d7d2;border-radius:4px;font-family:${FONT_MONO};font-size:11px;line-height:1.6;color:#606366;word-break:break-all;">Or paste this link in your browser:<br/><a href="${resetUrl}" style="color:#141416;text-decoration:underline;">${resetUrl}</a></p>`,
+    note: "If you didn't request a password reset, you can ignore this email. Your password will not change.",
+  });
+
+  const text = `Reset your Sallyport password using this link (valid for 1 hour, single use): ${resetUrl}`;
+  return { subject: "Reset your Sallyport password", html, text };
 }

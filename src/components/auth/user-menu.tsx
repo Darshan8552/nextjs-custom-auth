@@ -1,10 +1,9 @@
 "use client";
 
-import { LogOut, Settings } from "lucide-react";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
 import { logout } from "@/actions/auth/logout";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +15,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "./session-provider";
 
+function initialsFor(email: string) {
+  const local = email.split("@")[0] ?? "";
+  const parts = local.split(/[._-]+/).filter(Boolean);
+
+  if (parts.length > 1) {
+    return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
+  }
+
+  return local.slice(0, 2).toUpperCase();
+}
+
 export function UserMenu() {
   const { user } = useSession();
   const [pending, startTransition] = useTransition();
@@ -25,25 +35,37 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label="Open user menu"
+        className="flex h-8 items-center gap-1.5 rounded-[4px] border border-border pr-1.5 pl-1 outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        aria-label="Open account menu"
       >
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="Shadcn" />
-          <AvatarFallback>{user.email.slice(0, 1).toUpperCase()}</AvatarFallback>
-        </Avatar>
+        <span className="grid size-6 place-items-center rounded-[2px] bg-foreground font-mono text-[10px] font-medium text-background">
+          {initialsFor(user.email)}
+        </span>
+        <ChevronDown
+          className="size-3 text-muted-foreground"
+          aria-hidden="true"
+        />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="min-w-56">
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="max-w-56 truncate">
-            {user.email}
+          <DropdownMenuLabel className="px-1.5 py-2">
+            <span className="block font-mono text-[9px] tracking-[0.14em] text-muted-foreground uppercase">
+              Signed in
+            </span>
+            <span className="mt-0.5 block max-w-52 truncate text-[12px] font-normal text-foreground">
+              {user.email}
+            </span>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/settings" />}>
+        <DropdownMenuItem
+          className="cursor-pointer py-1.5"
+          render={<Link href="/settings" />}
+        >
           <Settings className="size-4" /> Settings
         </DropdownMenuItem>
         <DropdownMenuItem
+          className="cursor-pointer py-1.5"
           disabled={pending}
           onClick={() =>
             startTransition(async () => {

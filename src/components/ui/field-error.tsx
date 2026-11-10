@@ -9,7 +9,10 @@ export function FieldError({
 }) {
   if (!message) return null;
   return (
-    <p role="alert" className={cn("text-sm text-destructive", className)}>
+    <p
+      role="alert"
+      className={cn("text-[12.5px] leading-4 text-destructive", className)}
+    >
       {message}
     </p>
   );
