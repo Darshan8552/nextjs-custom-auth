@@ -18,9 +18,25 @@ export const passwordSchema = z
     "This password is too common. Please choose another one",
   );
 
+export const otpCodeSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{6}$/, "Enter the 6-digit code");
+
 export const signUpSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
 });
 
+export const verifyOtpSchema = z.object({
+  email: emailSchema,
+  code: otpCodeSchema,
+});
+
+export const resendOtpSchema = z.object({
+  email: emailSchema,
+});
+
 export type SignUpInput = z.infer<typeof signUpSchema>;
+export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
+export type ResendOtpInput = z.infer<typeof resendOtpSchema>;
