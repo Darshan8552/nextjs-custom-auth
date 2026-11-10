@@ -30,7 +30,7 @@ export function UserMenu() {
       >
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" alt="Shadcn" />
-          <AvatarFallback>{user.email}</AvatarFallback>
+          <AvatarFallback>{user.email.slice(0, 1).toUpperCase()}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
