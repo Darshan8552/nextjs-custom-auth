@@ -28,6 +28,11 @@ export const signUpSchema = z.object({
   password: passwordSchema,
 });
 
+export const loginSchema = z.object({
+  email: emailSchema,
+  password: z.string().min(1, "Enter your password"),
+});
+
 export const verifyOtpSchema = z.object({
   email: emailSchema,
   code: otpCodeSchema,
@@ -38,5 +43,6 @@ export const resendOtpSchema = z.object({
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 export type ResendOtpInput = z.infer<typeof resendOtpSchema>;
