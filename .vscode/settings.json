@@ -6,9 +6,15 @@
         "**/.jj": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        ".vscode": true
+        ".vscode": true,
+        ".next": true,
+        "node_modules": true,
+        "pnpm-workspace.yaml": true
     },
     "hide-files.files": [
-        ".vscode"
+        ".vscode",
+        ".next",
+        "node_modules",
+        "pnpm-workspace.yaml"
     ]
 }
