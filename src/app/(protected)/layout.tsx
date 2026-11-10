@@ -1,14 +1,11 @@
 import { SessionProvider } from "@/components/auth/session-provider";
 import { UserMenu } from "@/components/auth/user-menu";
+import { ModeToggle } from "@/components/ui/toggle-mode";
 import { requireUser } from "@/lib/auth/guards";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 
-export default function ProtectedLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={<ProtectedLayoutFallback />}>
       <ProtectedLayoutContent>{children}</ProtectedLayoutContent>
@@ -26,7 +23,10 @@ async function ProtectedLayoutContent({ children }: { children: ReactNode }) {
           <Link href="/dashboard" className="font-semibold">
             Auth App
           </Link>
-          <UserMenu />
+          <div className="flex gap-4">
+            <ModeToggle />
+            <UserMenu />
+          </div>
         </div>
       </header>
       <main className="mx-auto w-full max-w-4xl flex-1 p-4 py-8">
