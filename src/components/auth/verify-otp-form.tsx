@@ -1,29 +1,49 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { resendOtp } from "@/actions/auth/resend-otp";
-import { verifyOtp } from "@/actions/auth/verify-otp";
+import { resendOtp, verifyOtp } from "@/actions/auth";
+import { Button } from "@/components/ui/button";
+import { FieldError } from "@/components/ui/field-error";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { authConfig } from "@/lib/auth/config";
 import { type VerifyOtpInput, verifyOtpSchema } from "@/lib/validations/auth";
-import { Button } from "../ui/button";
-import { FieldError } from "../ui/field-error";
 import { callAction, showFailure } from "./form-utils";
 import { OtpInput } from "./otp-input";
+import { PasswordChecklist } from "./password-checklist";
 
-const INITIAL_COOLDOWN = 60;
-
-export function VerifyOtpForm({ email }: { email: string }) {
+export function VerifyOtpForm({
+  email,
+  initialCooldown,
+}: {
+  email: string;
+  initialCooldown: number;
+}) {
   const router = useRouter();
-  const [cooldown, setCooldown] = useState(INITIAL_COOLDOWN);
+  const [cooldown, setCooldown] = useState<number>(initialCooldown);
   const [resending, setResending] = useState(false);
+  const cooldownEndsAt = useRef<number | null>(null);
 
   useEffect(() => {
-    if (cooldown <= 0) return;
-    const id = setTimeout(() => setCooldown((c) => c - 1), 1000);
-    return () => clearTimeout(id);
-  }, [cooldown]);
+    cooldownEndsAt.current = Date.now() + initialCooldown * 1000;
+    const tick = () => {
+      const endsAt = cooldownEndsAt.current;
+      if (endsAt === null) return;
+      setCooldown(Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)));
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [initialCooldown]);
+
+  function startCooldown(seconds: number) {
+    cooldownEndsAt.current = Date.now() + seconds * 1000;
+    setCooldown(seconds);
+  }
 
   const {
     control,
@@ -31,11 +51,15 @@ export function VerifyOtpForm({ email }: { email: string }) {
     handleSubmit,
     setError,
     resetField,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<VerifyOtpInput>({
     resolver: zodResolver(verifyOtpSchema),
-    defaultValues: { email, code: "" },
+    defaultValues: { email, code: "", password: "", confirmPassword: "" },
   });
+
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
 
   async function onSubmit(values: VerifyOtpInput) {
     const result = await callAction(() => verifyOtp(values));
@@ -45,12 +69,13 @@ export function VerifyOtpForm({ email }: { email: string }) {
       if (
         result.code === "OTP_TOO_MANY_ATTEMPTS" ||
         result.code === "OTP_EXPIRED"
-      )
+      ) {
         resetField("code");
+      }
       return;
     }
     toast.success("Email verified. Welcome!");
-    router.replace("/dashboard");
+    router.replace(authConfig.routes.afterVerify);
     router.refresh();
   }
 
@@ -60,12 +85,12 @@ export function VerifyOtpForm({ email }: { email: string }) {
     setResending(false);
     if (!result) return;
     if (!result.success) {
-      if (result.retryAfter) setCooldown(result.retryAfter);
+      if (result.retryAfter) startCooldown(result.retryAfter);
       showFailure(result);
       return;
     }
     resetField("code");
-    setCooldown(result.data.cooldownSeconds);
+    startCooldown(result.data.cooldownSeconds);
     toast.success("A new code is on its way.");
   }
 
@@ -89,13 +114,40 @@ export function VerifyOtpForm({ email }: { email: string }) {
         />
         <FieldError message={errors.code?.message} className="text-center" />
       </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="text-[13px]">
+          Password
+        </Label>
+        <Input
+          id="password"
+          type="password"
+          autoComplete="new-password"
+          aria-invalid={!!errors.password}
+          {...register("password")}
+        />
+        <PasswordChecklist password={password} confirm={confirmPassword} />
+        <FieldError message={errors.password?.message} />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="confirmPassword" className="text-[13px]">
+          Confirm password
+        </Label>
+        <Input
+          id="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          aria-invalid={!!errors.confirmPassword}
+          {...register("confirmPassword")}
+        />
+        <FieldError message={errors.confirmPassword?.message} />
+      </div>
       <Button
         type="submit"
         size="lg"
         className="w-full"
         disabled={isSubmitting}
       >
-        Verify email
+        Verify and continue
       </Button>
       <div className="flex items-center justify-between gap-3 border-t border-dashed border-border pt-4">
         <p className="font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase">

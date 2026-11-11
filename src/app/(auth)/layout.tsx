@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-5">
           <Link
             href="/"
-            className="rounded-[4px] outline-none focus-visible:ring-2 focus-visible:ring-ring/35 focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+            className="rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring/35 focus-visible:ring-offset-4 focus-visible:ring-offset-background"
           >
             <Wordmark />
           </Link>
@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="flex flex-1 items-center justify-center px-4 py-10 sm:py-14">
-        <div className="w-full max-w-[27rem]">{children}</div>
+        <div className="w-full max-w-108">{children}</div>
       </main>
     </div>
   );

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChangePasswordForm } from "@/components/auth/change-password-form";
-import type { SessionUser } from "@/lib/auth/types";
+import type { SessionUser } from "@/lib/types";
 import { AccountMasthead } from "./masthead";
 import { StatusChip } from "./status-chip";
 
@@ -114,12 +114,12 @@ export function SettingsView({ user }: { user: SessionUser }) {
             <ul className="divide-y divide-border">
               <li className="flex items-center justify-between gap-3 px-4 py-3">
                 <span className="text-[12.5px]">Other devices</span>
-                <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.12em] text-verified uppercase">
+                <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.12em] text-muted-foreground uppercase">
                   <span
                     aria-hidden="true"
-                    className="size-1.5 rounded-full bg-verified"
+                    className="size-1.5 rounded-full bg-muted-foreground"
                   />
-                  Signed out
+                  Ended on password change
                 </span>
               </li>
               <li className="flex items-center justify-between gap-3 px-4 py-3">
@@ -129,13 +129,13 @@ export function SettingsView({ user }: { user: SessionUser }) {
                     aria-hidden="true"
                     className="size-1.5 rounded-full bg-verified"
                   />
-                  Stays active
+                  Rotated on password change
                 </span>
               </li>
             </ul>
             <p className="border-t border-dashed border-border px-4 py-3 text-[11.5px] leading-4 text-muted-foreground">
-              Changing your password revokes every other session tied to this
-              account.
+              Changing your password ends every session, then starts a fresh one
+              on this device.
             </p>
           </section>
         </div>

@@ -3,7 +3,8 @@
 import { ChevronDown, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
-import { logout } from "@/actions/auth/logout";
+import { logout } from "@/actions/auth";
+import { useSession } from "@/components/providers/session-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession } from "./session-provider";
+import { authConfig } from "@/lib/auth/config";
 
 function initialsFor(email: string) {
   const local = email.split("@")[0] ?? "";
@@ -60,7 +61,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer py-1.5"
-          render={<Link href="/settings" />}
+          render={<Link href={authConfig.routes.settings} />}
         >
           <Settings className="size-4" /> Settings
         </DropdownMenuItem>

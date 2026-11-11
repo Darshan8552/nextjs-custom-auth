@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SettingsView } from "@/components/account/settings-view";
-import { requireUser } from "@/lib/auth/guards";
+import { requireUser } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Security settings" };
 

@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { resetPassword } from "@/actions/auth/reset-password";
+import { resetPassword } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authConfig } from "@/lib/auth/config";
 import {
   type ResetPasswordInput,
   resetPasswordSchema,
@@ -44,7 +45,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       return;
     }
     toast.success("Password updated. Please log in with your new password.");
-    router.replace("/login");
+    router.replace(authConfig.routes.login);
   }
 
   if (linkInvalid) {
@@ -58,7 +59,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
           continue.
         </p>
         <Button
-          render={<Link href="/forgot-password" />}
+          render={<Link href={authConfig.routes.forgotPassword} />}
           nativeButton={false}
           size="lg"
           className="w-full"

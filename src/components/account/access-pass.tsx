@@ -1,5 +1,5 @@
 import { PassMark } from "@/components/brand/wordmark";
-import type { SessionUser } from "@/lib/auth/types";
+import type { SessionUser } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {

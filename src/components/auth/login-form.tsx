@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { login } from "@/actions/auth/login";
+import { login } from "@/actions/auth";
+import { Button } from "@/components/ui/button";
+import { FieldError } from "@/components/ui/field-error";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { authConfig } from "@/lib/auth/config";
 import { type LoginInput, loginSchema } from "@/lib/validations/auth";
-import { Button } from "../ui/button";
-import { FieldError } from "../ui/field-error";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { callAction, showFailure } from "./form-utils";
 
 export function LoginForm() {
@@ -35,12 +36,15 @@ export function LoginForm() {
     }
     if (result.data.status === "VERIFY_REQUIRED") {
       toast.info("Please verify your email first. We sent you a new code.");
-      router.push(`/verify?email=${encodeURIComponent(result.data.email)}`);
+      router.push(
+        `${authConfig.routes.verify}?email=${encodeURIComponent(result.data.email)}&sent=1`,
+      );
       return;
     }
-    router.replace("/dashboard");
+    router.replace(authConfig.routes.afterLogin);
     router.refresh();
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <div className="space-y-1.5">
@@ -62,7 +66,7 @@ export function LoginForm() {
             Password
           </Label>
           <Link
-            href="/forgot-password"
+            href={authConfig.routes.forgotPassword}
             className="text-[12px] text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground"
           >
             Forgot password?

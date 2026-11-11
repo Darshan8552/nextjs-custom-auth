@@ -40,7 +40,7 @@ export function AuthCard({
             Sallyport
           </span>
         </span>
-        <span className="flex items-center gap-[7px] font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-band-foreground/60">
+        <span className="flex items-center gap-[7px] font-mono text-[10px] font-medium tracking-[0.16em] text-band-foreground/60 uppercase">
           <span aria-hidden="true" className="size-1.5 bg-signal" />
           {KIND_LABEL[kind]}
         </span>

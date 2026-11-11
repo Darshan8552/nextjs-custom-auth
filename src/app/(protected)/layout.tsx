@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { type ReactNode, Suspense } from "react";
-import { SessionProvider } from "@/components/auth/session-provider";
 import { UserMenu } from "@/components/auth/user-menu";
 import { Wordmark } from "@/components/brand/wordmark";
+import { SessionProvider } from "@/components/providers/session-provider";
 import { ModeToggle } from "@/components/ui/toggle-mode";
-import { requireUser } from "@/lib/auth/guards";
+import { requireUser } from "@/lib/auth";
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (

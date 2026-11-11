@@ -14,14 +14,14 @@ const GATES = [
   {
     index: "Gate 01",
     title: "Issue",
-    copy: "Create an account with an email address and a password. Password rules are checked before the account is created.",
+    copy: "Start with an email address. The account stays pending until a one-time code confirms it, so no password can be set on someone else's behalf.",
     stamp: "Issued",
     tone: "signal",
   },
   {
     index: "Gate 02",
     title: "Verify",
-    copy: "A six-digit code confirms the address. It expires in ten minutes, allows five attempts, and can be resent once a minute.",
+    copy: "A six-digit code confirms the address and unlocks password setup. It expires in ten minutes, allows five attempts, and can be resent once a minute.",
     stamp: "Checked",
     tone: "ink",
   },

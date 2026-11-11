@@ -4,18 +4,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { changePassword } from "@/actions/auth/change-password";
+import { changePassword } from "@/actions/auth";
+import { useRequireAuth } from "@/components/providers/session-provider";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authConfig } from "@/lib/auth/config";
 import {
   type ChangePasswordInput,
   changePasswordSchema,
 } from "@/lib/validations/auth";
 import { callAction, showFailure } from "./form-utils";
 import { PasswordChecklist } from "./password-checklist";
-import { useRequireAuth } from "./session-provider";
 
 export function ChangePasswordForm() {
   const user = useRequireAuth();
@@ -44,7 +45,8 @@ export function ChangePasswordForm() {
     if (!result) return;
     if (!result.success) {
       showFailure(result, setError);
-      if (result.code === "UNAUTHORIZED") router.replace("/login");
+      if (result.code === "UNAUTHORIZED")
+        router.replace(authConfig.routes.login);
       return;
     }
     reset();

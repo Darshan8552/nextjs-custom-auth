@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { DashboardOverview } from "@/components/account/dashboard-overview";
-import { requireUser } from "@/lib/auth/guards";
+import { requireUser } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Access overview" };
 
@@ -30,7 +30,7 @@ function DashboardSkeleton() {
       </div>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-start">
         <div className="rounded-[5px] border border-border bg-card">
-          <div className="h-11 rounded-t-[4px] bg-muted" />
+          <div className="h-11 rounded-t-lg bg-muted" />
           <div className="space-y-5 p-5 sm:p-6">
             <div className="h-2.5 w-16 animate-pulse bg-muted" />
             <div className="h-7 w-3/4 animate-pulse bg-muted" />

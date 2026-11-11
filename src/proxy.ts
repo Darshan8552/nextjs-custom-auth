@@ -1,26 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
-import {
-  PROTECTED_PATH_PREFIXES,
-  SESSION_COOKIE,
-  sessionCookieOptions,
-} from "./lib/auth/constants";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { authConfig, sessionCookieOptions } from "@/lib/auth/config";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
+  const token = request.cookies.get(authConfig.session.cookieName)?.value;
 
-  const isProtected = PROTECTED_PATH_PREFIXES.some(
+  const isProtected = authConfig.protectedPaths.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
   if (!token && isProtected) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL(authConfig.routes.login, request.url));
   }
 
   const response = NextResponse.next();
 
   const isServerAction = request.headers.has("next-action");
   if (token && !isServerAction) {
-    response.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());
+    response.cookies.set(
+      authConfig.session.cookieName,
+      token,
+      sessionCookieOptions(),
+    );
   }
   return response;
 }

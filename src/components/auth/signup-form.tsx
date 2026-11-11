@@ -1,16 +1,17 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { signUp } from "@/actions/auth/sign-up";
+import { signUp } from "@/actions/auth";
+import { Button } from "@/components/ui/button";
+import { FieldError } from "@/components/ui/field-error";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { authConfig } from "@/lib/auth/config";
 import { type SignUpInput, signUpSchema } from "@/lib/validations/auth";
-import { Button } from "../ui/button";
-import { FieldError } from "../ui/field-error";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { callAction, showFailure } from "./form-utils";
-import { PasswordChecklist } from "./password-checklist";
 
 export function SignupForm() {
   const router = useRouter();
@@ -19,14 +20,11 @@ export function SignupForm() {
     register,
     handleSubmit,
     setError,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "" },
   });
-
-  const password = watch("password");
 
   async function onSubmit(values: SignUpInput) {
     const result = await callAction(() => signUp(values));
@@ -37,7 +35,9 @@ export function SignupForm() {
     }
 
     toast.success("We sent a 6-digit code to your email.");
-    router.push(`/verify?email=${encodeURIComponent(result.data.email)}`);
+    router.push(
+      `${authConfig.routes.verify}?email=${encodeURIComponent(result.data.email)}&sent=1`,
+    );
   }
 
   return (
@@ -55,20 +55,9 @@ export function SignupForm() {
         />
         <FieldError message={errors.email?.message} />
       </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="password" className="text-[13px]">
-          Password
-        </Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          aria-invalid={!!errors.password}
-          {...register("password")}
-        />
-        <PasswordChecklist password={password} />
-        <FieldError message={errors.password?.message} />
-      </div>
+      <p className="text-[12px] leading-relaxed text-muted-foreground">
+        You&apos;ll choose a password after the code confirms your address.
+      </p>
       <Button
         type="submit"
         size="lg"

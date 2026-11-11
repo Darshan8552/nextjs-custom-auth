@@ -1,15 +1,4 @@
-export type AuthErrorCode =
-  | "VALIDATION_ERROR"
-  | "INVALID_CREDENTIALS"
-  | "EMAIL_TAKEN"
-  | "OTP_EXPIRED"
-  | "OTP_INVALID"
-  | "OTP_TOO_MANY_ATTEMPTS"
-  | "RESET_TOKEN_INVALID"
-  | "RATE_LIMITED"
-  | "EMAIL_SERVICE_UNAVAILABLE"
-  | "UNAUTHORIZED"
-  | "INTERNAL";
+import type { AuthErrorCode } from "@/lib/types";
 
 type AuthErrorExtra = {
   retryAfter?: number;

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { AuthCard } from "@/components/auth/auth-card";
 import { LoginForm } from "@/components/auth/login-form";
-import { redirectIfAuthenticated } from "@/lib/auth/guards";
+import { redirectIfAuthenticated } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Log in" };
 

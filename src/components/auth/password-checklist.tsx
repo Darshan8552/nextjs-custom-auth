@@ -1,8 +1,9 @@
 "use client";
 
 import { Check, Minus } from "lucide-react";
+import { authConfig } from "@/lib/auth/config";
 import { cn } from "@/lib/utils";
-import { isCommonPassword } from "@/lib/validations/common-passwords";
+import { isCommonPassword } from "@/lib/validations/auth";
 
 type PasswordChecklistProps = {
   password: string;
@@ -15,8 +16,8 @@ export function PasswordChecklist({
 }: PasswordChecklistProps) {
   const checks = [
     {
-      label: "8 characters or more",
-      met: password.length >= 8,
+      label: `${authConfig.password.minLength} characters or more`,
+      met: password.length >= authConfig.password.minLength,
     },
     {
       label: "Not a common password",

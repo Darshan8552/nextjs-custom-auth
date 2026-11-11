@@ -1,15 +1,26 @@
 import "server-only";
-import { cache } from "react";
+
 import { cookies } from "next/headers";
-import {
-  SESSION_COOKIE,
-  SESSION_MAX_AGE_MS,
-  SESSION_REFRESH_AFTER_MS,
-  sessionCookieOptions,
-} from "./constants";
+import { cache } from "react";
+import { prisma } from "@/lib/prisma";
+import type { SessionUser } from "@/lib/types";
+import { authConfig, sessionCookieOptions } from "./config";
 import { generateToken, hashToken } from "./tokens";
-import type { SessionUser } from "./types";
-import { prisma } from "../prisma";
+
+const MAX_AGE_MS = authConfig.session.maxAgeSeconds * 1000;
+const REFRESH_AFTER_MS = authConfig.session.refreshAfterMs;
+const CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
+
+let lastSessionCleanup = 0;
+
+function cleanupExpiredSessions(): void {
+  const now = Date.now();
+  if (now - lastSessionCleanup < CLEANUP_INTERVAL_MS) return;
+  lastSessionCleanup = now;
+  void prisma.session
+    .deleteMany({ where: { expiresAt: { lt: new Date(now) } } })
+    .catch(() => {});
+}
 
 export async function createSession(userId: string): Promise<void> {
   const token = generateToken(32);
@@ -17,15 +28,20 @@ export async function createSession(userId: string): Promise<void> {
     data: {
       userId,
       tokenHash: hashToken(token),
-      expiresAt: new Date(Date.now() + SESSION_MAX_AGE_MS),
+      expiresAt: new Date(Date.now() + MAX_AGE_MS),
     },
   });
-  (await cookies()).set(SESSION_COOKIE, token, sessionCookieOptions());
+  cleanupExpiredSessions();
+  (await cookies()).set(
+    authConfig.session.cookieName,
+    token,
+    sessionCookieOptions(),
+  );
 }
 
 export const getCurrentSession = cache(
   async (): Promise<{ sessionId: string; user: SessionUser } | null> => {
-    const token = (await cookies()).get(SESSION_COOKIE)?.value;
+    const token = (await cookies()).get(authConfig.session.cookieName)?.value;
     if (!token) return null;
 
     const session = await prisma.session.findUnique({
@@ -42,10 +58,10 @@ export const getCurrentSession = cache(
     if (!session.user.emailVerified) return null;
 
     const remaining = session.expiresAt.getTime() - now;
-    if (remaining < SESSION_MAX_AGE_MS - SESSION_REFRESH_AFTER_MS) {
+    if (remaining < MAX_AGE_MS - REFRESH_AFTER_MS) {
       await prisma.session.update({
         where: { id: session.id },
-        data: { expiresAt: new Date(now + SESSION_MAX_AGE_MS) },
+        data: { expiresAt: new Date(now + MAX_AGE_MS) },
       });
     }
 
@@ -64,11 +80,16 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 
 export async function destroyCurrentSession(): Promise<void> {
   const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-  if (token) {
-    await prisma.session.deleteMany({ where: { tokenHash: hashToken(token) } });
+  const token = store.get(authConfig.session.cookieName)?.value;
+  try {
+    if (token) {
+      await prisma.session.deleteMany({
+        where: { tokenHash: hashToken(token) },
+      });
+    }
+  } finally {
+    store.delete(authConfig.session.cookieName);
   }
-  store.delete(SESSION_COOKIE);
 }
 
 export async function invalidateUserSessions(

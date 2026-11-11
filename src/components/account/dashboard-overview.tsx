@@ -1,7 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import type { SessionUser } from "@/lib/auth/types";
+import type { SessionUser } from "@/lib/types";
 import { AccessPass } from "./access-pass";
 import { AccountMasthead } from "./masthead";
 import { StatusChip } from "./status-chip";

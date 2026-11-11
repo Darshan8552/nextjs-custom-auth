@@ -1,4 +1,4 @@
-import type { EmailContent } from "@/lib/email";
+import type { EmailContent } from "@/lib/types";
 import {
   emailLayout,
   emailMicroLabel,

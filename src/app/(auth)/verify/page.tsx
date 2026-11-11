@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AuthCard } from "@/components/auth/auth-card";
 import { VerifyOtpForm } from "@/components/auth/verify-otp-form";
+import { authConfig } from "@/lib/auth/config";
 import { emailSchema } from "@/lib/validations/auth";
 
 export const metadata: Metadata = { title: "Verify your email" };
@@ -25,12 +26,16 @@ async function VerifyContent({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { email: rawEmail } = await searchParams;
+  const { email: rawEmail, sent: rawSent } = await searchParams;
   const parsed = emailSchema.safeParse(
     Array.isArray(rawEmail) ? rawEmail[0] : rawEmail,
   );
 
   if (!parsed.success) redirect("/signup");
+
+  const sent = Array.isArray(rawSent) ? rawSent[0] : rawSent;
+  const initialCooldown =
+    sent === "1" ? authConfig.otp.resendCooldownSeconds : 0;
 
   return (
     <AuthCard
@@ -42,7 +47,8 @@ async function VerifyContent({
           <span className="font-mono text-[12.5px] text-foreground break-all">
             {parsed.data}
           </span>
-          . It expires in 10 minutes.
+          . Choose a password, then enter the code to activate your account. The
+          code expires in 10 minutes.
         </>
       }
       footer={
@@ -57,7 +63,7 @@ async function VerifyContent({
         </>
       }
     >
-      <VerifyOtpForm email={parsed.data} />
+      <VerifyOtpForm email={parsed.data} initialCooldown={initialCooldown} />
     </AuthCard>
   );
 }

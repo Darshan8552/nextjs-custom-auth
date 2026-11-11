@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { AuthCard } from "@/components/auth/auth-card";
 import { SignupForm } from "@/components/auth/signup-form";
-import { redirectIfAuthenticated } from "@/lib/auth/guards";
+import { redirectIfAuthenticated } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Sign up" };
 
@@ -16,7 +16,7 @@ export default function SignupPage() {
       <AuthCard
         kind="issue"
         title="Create your account"
-        description="We'll email you a 6-digit code to verify it."
+        description="Enter your email and we'll send a 6-digit code. You'll choose a password after the code confirms your address."
         footer={
           <>
             Already have an account?{" "}
